@@ -78,7 +78,9 @@ class _MyHomePageState extends State<MyHomePage> {
           columnIndex + 1 < _columnCount &&
           _landmines.contains(i + _columnCount + 1)) ++aroundCount;
       list[i] = Grid(
-          landCountAround: aroundCount, isLandmine: _landmines.contains(i));
+          index: i,
+          landCountAround: aroundCount,
+          isLandmine: _landmines.contains(i));
     }
     setState(() {
       _grids = list;
@@ -157,9 +159,65 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  void _onDoubleClick(int index) {
+    print("doubleClick" + index.toString());
+    final int rowIndex = index ~/ _columnCount;
+    final int columnIndex = index % _columnCount;
+    List<Grid> list = List();
+    //top left
+    if (rowIndex > 0 && columnIndex > 0) {
+      final currentIndex = index - _columnCount - 1;
+      list.add(_grids[currentIndex]);
+    }
+    //top
+    if (rowIndex > 0) {
+      final currentIndex = index - _columnCount;
+      list.add(_grids[currentIndex]);
+    }
+    //top right
+    if (rowIndex > 0 && columnIndex + 1 < _columnCount) {
+      final currentIndex = index - _columnCount + 1;
+      list.add(_grids[currentIndex]);
+    }
+    //left
+    if (columnIndex > 0) {
+      final currentIndex = index - 1;
+      list.add(_grids[currentIndex]);
+    }
+    //right
+    if (columnIndex + 1 < _columnCount) {
+      final currentIndex = index + 1;
+      list.add(_grids[currentIndex]);
+    }
+    //bottom left
+    if (rowIndex + 1 < _rowCount && columnIndex > 0) {
+      final currentIndex = index + _columnCount - 1;
+      list.add(_grids[currentIndex]);
+    }
+    //bottom
+    if (rowIndex + 1 < _rowCount) {
+      final currentIndex = index + _columnCount;
+      list.add(_grids[currentIndex]);
+    }
+    //bottom right
+    if (rowIndex + 1 < _rowCount && columnIndex + 1 < _columnCount) {
+      final currentIndex = index + _columnCount + 1;
+      list.add(_grids[currentIndex]);
+    }
+    if (list.where((element) => element.status == GridStatus.FLAG).length ==
+        _grids[index].landCountAround) {
+      list
+          .where((element) => element.status == GridStatus.NORMAL)
+          .forEach((element) {
+        _onClick(element.index);
+      });
+    }
+  }
+
   void _confirmOne(int index) {
     setState(() {
       _grids[index] = Grid(
+          index: index,
           landCountAround: _grids[index].landCountAround,
           isLandmine: _grids[index].isLandmine,
           status: GridStatus.CONFIRM);
@@ -176,6 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _clear(int index) {
     setState(() {
       _grids[index] = Grid(
+          index: index,
           landCountAround: _grids[index].landCountAround,
           isLandmine: _grids[index].isLandmine,
           status: GridStatus.NORMAL);
@@ -185,6 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _flag(int index) {
     setState(() {
       _grids[index] = Grid(
+          index: index,
           landCountAround: _grids[index].landCountAround,
           isLandmine: _grids[index].isLandmine,
           status: GridStatus.FLAG);
@@ -194,6 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _doubt(int index) {
     setState(() {
       _grids[index] = Grid(
+          index: index,
           landCountAround: _grids[index].landCountAround,
           isLandmine: _grids[index].isLandmine,
           status: GridStatus.DOUBT);
@@ -276,6 +337,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   grid: e.value,
                   onClick: _onClick,
                   onLongClick: _onLongClick,
+                  onDoubleClick: _onDoubleClick,
                   index: e.key,
                 ))
             .toList(),

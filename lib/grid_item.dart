@@ -9,12 +9,14 @@ class GridItem extends StatelessWidget {
       @required this.grid,
       @required this.onClick,
       @required this.onLongClick,
+      @required this.onDoubleClick,
       @required this.index})
       : super(key: key);
 
   final Grid grid;
   final IntCallback onClick;
   final IntCallback onLongClick;
+  final IntCallback onDoubleClick;
   final int index;
 
   @override
@@ -41,6 +43,9 @@ class GridItem extends StatelessWidget {
       },
       onTap: () {
         if (grid.status == GridStatus.NORMAL) onClick(index);
+      },
+      onDoubleTap: () {
+        if (grid.status == GridStatus.CONFIRM) onDoubleClick(index);
       },
     );
   }

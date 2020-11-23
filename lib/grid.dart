@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class Grid {
   const Grid(
-      {@required this.landCountAround,
+      {@required this.index,
+      @required this.landCountAround,
       @required this.isLandmine,
       this.status = GridStatus.NORMAL});
 
+  final int index;
   final int landCountAround;
   final bool isLandmine;
   final GridStatus status;
@@ -26,7 +28,9 @@ class Grid {
 
   @override
   String toString() {
-    return "around: " +
+    return "index: " +
+        index.toString() +
+        "around: " +
         landCountAround.toString() +
         "  isLandmine: " +
         isLandmine.toString() +

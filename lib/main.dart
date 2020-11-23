@@ -48,8 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
     } while (_landmines.length < _landmineCount);
     List<Grid> list = List(_rowCount * _columnCount);
     for (int i = 0; i < _rowCount * _columnCount; i++) {
-      final rowIndex = i / _columnCount;
-      final columnIndex = i % _columnCount;
+      final int rowIndex = i ~/ _columnCount;
+      final int columnIndex = i % _columnCount;
       var aroundCount = 0;
       //top left
       if (rowIndex > 0 &&
@@ -164,7 +164,11 @@ class _MyHomePageState extends State<MyHomePage> {
           isLandmine: _grids[index].isLandmine,
           status: GridStatus.CONFIRM);
       if (_success()) {
-        showDialog(context: context, child: AlertDialog(title: Text("恭喜您")));
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(title: Text("恭喜您"));
+            });
       }
     });
   }
@@ -201,8 +205,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_grids[index].landCountAround != 0) {
       return;
     }
-    final rowIndex = index / _columnCount;
-    final columnIndex = index % _columnCount;
+    final int rowIndex = index ~/ _columnCount;
+    final int columnIndex = index % _columnCount;
     //top left
     if (rowIndex > 0 && columnIndex > 0) {
       final currentIndex = index - _columnCount - 1;

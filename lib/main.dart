@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text("祝您下次好运"),
+              content: Text("祝您下次好运"),
               actions: [
                 MaterialButton(
                   onPressed: () {
@@ -160,7 +160,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onDoubleClick(int index) {
-    print("doubleClick" + index.toString());
     final int rowIndex = index ~/ _columnCount;
     final int columnIndex = index % _columnCount;
     List<Grid> list = List();
@@ -225,7 +224,24 @@ class _MyHomePageState extends State<MyHomePage> {
         showDialog(
             context: context,
             builder: (context) {
-              return AlertDialog(title: Text("恭喜您"));
+              return AlertDialog(
+                content: Text("恭喜您"),
+                actions: [
+                  MaterialButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("取消"),
+                  ),
+                  MaterialButton(
+                    onPressed: () {
+                      _generateGrids();
+                      Navigator.pop(context);
+                    },
+                    child: Text("再来一局"),
+                  ),
+                ],
+              );
             });
       }
     });

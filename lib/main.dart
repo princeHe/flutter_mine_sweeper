@@ -48,38 +48,9 @@ class _MyHomePageState extends State<MyHomePage> {
     } while (_landmines.length < _landmineCount);
     List<Grid> list = List(_rowCount * _columnCount);
     for (int i = 0; i < _rowCount * _columnCount; i++) {
-      final int rowIndex = i ~/ _columnCount;
-      final int columnIndex = i % _columnCount;
-      var aroundCount = 0;
-      //top left
-      if (rowIndex > 0 &&
-          columnIndex > 0 &&
-          _landmines.contains(i - _columnCount - 1)) ++aroundCount;
-      //top
-      if (rowIndex > 0 && _landmines.contains(i - _columnCount)) ++aroundCount;
-      //top right
-      if (rowIndex > 0 &&
-          columnIndex + 1 < _columnCount &&
-          _landmines.contains(i - _columnCount + 1)) ++aroundCount;
-      //left
-      if (columnIndex > 0 && _landmines.contains(i - 1)) ++aroundCount;
-      //right
-      if (columnIndex + 1 < _columnCount && _landmines.contains(i + 1))
-        ++aroundCount;
-      //bottom left
-      if (rowIndex + 1 < _rowCount &&
-          columnIndex > 0 &&
-          _landmines.contains(i + _columnCount - 1)) ++aroundCount;
-      //bottom
-      if (rowIndex + 1 < _rowCount && _landmines.contains(i + _columnCount))
-        ++aroundCount;
-      //bottom right
-      if (rowIndex + 1 < _rowCount &&
-          columnIndex + 1 < _columnCount &&
-          _landmines.contains(i + _columnCount + 1)) ++aroundCount;
       list[i] = Grid(
           index: i,
-          landCountAround: aroundCount,
+          landCountAround: aroundIndexes(i).where((element) => _landmines.contains(element)).length,
           isLandmine: _landmines.contains(i));
     }
     setState(() {
@@ -160,49 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onDoubleClick(int index) {
-    final int rowIndex = index ~/ _columnCount;
-    final int columnIndex = index % _columnCount;
-    List<Grid> list = List();
-    //top left
-    if (rowIndex > 0 && columnIndex > 0) {
-      final currentIndex = index - _columnCount - 1;
-      list.add(_grids[currentIndex]);
-    }
-    //top
-    if (rowIndex > 0) {
-      final currentIndex = index - _columnCount;
-      list.add(_grids[currentIndex]);
-    }
-    //top right
-    if (rowIndex > 0 && columnIndex + 1 < _columnCount) {
-      final currentIndex = index - _columnCount + 1;
-      list.add(_grids[currentIndex]);
-    }
-    //left
-    if (columnIndex > 0) {
-      final currentIndex = index - 1;
-      list.add(_grids[currentIndex]);
-    }
-    //right
-    if (columnIndex + 1 < _columnCount) {
-      final currentIndex = index + 1;
-      list.add(_grids[currentIndex]);
-    }
-    //bottom left
-    if (rowIndex + 1 < _rowCount && columnIndex > 0) {
-      final currentIndex = index + _columnCount - 1;
-      list.add(_grids[currentIndex]);
-    }
-    //bottom
-    if (rowIndex + 1 < _rowCount) {
-      final currentIndex = index + _columnCount;
-      list.add(_grids[currentIndex]);
-    }
-    //bottom right
-    if (rowIndex + 1 < _rowCount && columnIndex + 1 < _columnCount) {
-      final currentIndex = index + _columnCount + 1;
-      list.add(_grids[currentIndex]);
-    }
+    List<Grid> list = _grids.where((element) => aroundIndexes(index).contains(element.index)).toList();
     if (list.where((element) => element.status == GridStatus.FLAG).length ==
         _grids[index].landCountAround) {
       list
@@ -282,56 +211,32 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_grids[index].landCountAround != 0) {
       return;
     }
+    aroundIndexes(index).forEach((element) {
+      if (_grids[element].status == GridStatus.NORMAL) _autoScan(element);
+    });
+  }
+
+  List<int> aroundIndexes(int index) {
+    List<int> list = List();
     final int rowIndex = index ~/ _columnCount;
     final int columnIndex = index % _columnCount;
     //top left
-    if (rowIndex > 0 && columnIndex > 0) {
-      final currentIndex = index - _columnCount - 1;
-      if (_grids[currentIndex].status == GridStatus.NORMAL)
-        _autoScan(currentIndex);
-    }
+    if (rowIndex > 0 && columnIndex > 0) list.add(index - _columnCount - 1);
     //top
-    if (rowIndex > 0) {
-      final currentIndex = index - _columnCount;
-      if (_grids[currentIndex].status == GridStatus.NORMAL)
-        _autoScan(currentIndex);
-    }
+    if (rowIndex > 0) list.add(index - _columnCount);
     //top right
-    if (rowIndex > 0 && columnIndex + 1 < _columnCount) {
-      final currentIndex = index - _columnCount + 1;
-      if (_grids[currentIndex].status == GridStatus.NORMAL)
-        _autoScan(currentIndex);
-    }
+    if (rowIndex > 0 && columnIndex + 1 < _columnCount) list.add(index - _columnCount + 1);
     //left
-    if (columnIndex > 0) {
-      final currentIndex = index - 1;
-      if (_grids[currentIndex].status == GridStatus.NORMAL)
-        _autoScan(currentIndex);
-    }
+    if (columnIndex > 0) list.add(index - 1);
     //right
-    if (columnIndex + 1 < _columnCount) {
-      final currentIndex = index + 1;
-      if (_grids[currentIndex].status == GridStatus.NORMAL)
-        _autoScan(currentIndex);
-    }
+    if (columnIndex + 1 < _columnCount) list.add(index + 1);
     //bottom left
-    if (rowIndex + 1 < _rowCount && columnIndex > 0) {
-      final currentIndex = index + _columnCount - 1;
-      if (_grids[currentIndex].status == GridStatus.NORMAL)
-        _autoScan(currentIndex);
-    }
+    if (rowIndex + 1 < _rowCount && columnIndex > 0) list.add(index + _columnCount - 1);
     //bottom
-    if (rowIndex + 1 < _rowCount) {
-      final currentIndex = index + _columnCount;
-      if (_grids[currentIndex].status == GridStatus.NORMAL)
-        _autoScan(currentIndex);
-    }
+    if (rowIndex + 1 < _rowCount) list.add(index + _columnCount);
     //bottom right
-    if (rowIndex + 1 < _rowCount && columnIndex + 1 < _columnCount) {
-      final currentIndex = index + _columnCount + 1;
-      if (_grids[currentIndex].status == GridStatus.NORMAL)
-        _autoScan(currentIndex);
-    }
+    if (rowIndex + 1 < _rowCount && columnIndex + 1 < _columnCount) list.add(index + _columnCount + 1);
+    return list;
   }
 
   @override

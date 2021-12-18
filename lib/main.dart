@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
     do {
       _landmines.add(Random.secure().nextInt(_rowCount * _columnCount));
     } while (_landmines.length < _landmineCount);
-    List<Grid> list = List(_rowCount * _columnCount);
+    List<Grid> list = []..length = _rowCount * _columnCount;
     for (int i = 0; i < _rowCount * _columnCount; i++) {
       list[i] = Grid(
           index: i,
@@ -217,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<int> aroundIndexes(int index) {
-    List<int> list = List();
+    List<int> list = [];
     final int rowIndex = index ~/ _columnCount;
     final int columnIndex = index % _columnCount;
     //top left

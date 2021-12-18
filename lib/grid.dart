@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class Grid {
   const Grid(
-      {@required this.index,
-      @required this.landCountAround,
-      @required this.isLandmine,
+      {required this.index,
+      required this.landCountAround,
+      required this.isLandmine,
       this.status = GridStatus.NORMAL});
 
   final int index;
@@ -12,7 +12,7 @@ class Grid {
   final bool isLandmine;
   final GridStatus status;
 
-  IconData getIconData() {
+  IconData? getIconData() {
     switch (status) {
       case GridStatus.NORMAL:
         return null;
@@ -23,7 +23,6 @@ class Grid {
       case GridStatus.DOUBT:
         return Icons.help_outline;
     }
-    return null;
   }
 
   @override

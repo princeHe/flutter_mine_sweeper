@@ -5,12 +5,12 @@ import 'grid.dart';
 
 class GridItem extends StatelessWidget {
   const GridItem(
-      {Key key,
-      @required this.grid,
-      @required this.onClick,
-      @required this.onLongClick,
-      @required this.onDoubleClick,
-      @required this.index})
+      {Key? key,
+      required this.grid,
+      required this.onClick,
+      required this.onLongClick,
+      required this.onDoubleClick,
+      required this.index})
       : super(key: key);
 
   final Grid grid;

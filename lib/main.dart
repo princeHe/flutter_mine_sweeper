@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+  MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -32,8 +32,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _rowCount = 30, _columnCount = 16, _landmineCount = 81;
 
-  List<Grid> _grids;
-  BuildContext context;
+  late List<Grid> _grids;
+  late BuildContext context;
 
   @override
   void initState() {
@@ -46,13 +46,14 @@ class _MyHomePageState extends State<MyHomePage> {
     do {
       _landmines.add(Random.secure().nextInt(_rowCount * _columnCount));
     } while (_landmines.length < _landmineCount);
-    List<Grid> list = []..length = _rowCount * _columnCount;
-    for (int i = 0; i < _rowCount * _columnCount; i++) {
-      list[i] = Grid(
-          index: i,
-          landCountAround: aroundIndexes(i).where((element) => _landmines.contains(element)).length,
-          isLandmine: _landmines.contains(i));
-    }
+    List<Grid> list = List.generate(
+        _rowCount * _columnCount,
+        (index) => Grid(
+            index: index,
+            landCountAround: aroundIndexes(index)
+                .where((element) => _landmines.contains(element))
+                .length,
+            isLandmine: _landmines.contains(index)));
     setState(() {
       _grids = list;
     });
@@ -70,17 +71,12 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_grids[index].isLandmine) {
       //点到了雷
       showDialog(
+          barrierDismissible: false,
           context: context,
           builder: (context) {
             return AlertDialog(
               content: Text("祝您下次好运"),
               actions: [
-                MaterialButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text("取消"),
-                ),
                 MaterialButton(
                   onPressed: () {
                     _generateGrids();
@@ -131,7 +127,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onDoubleClick(int index) {
-    List<Grid> list = _grids.where((element) => aroundIndexes(index).contains(element.index)).toList();
+    List<Grid> list = _grids
+        .where((element) => aroundIndexes(index).contains(element.index))
+        .toList();
     if (list.where((element) => element.status == GridStatus.FLAG).length ==
         _grids[index].landCountAround) {
       list
@@ -151,17 +149,12 @@ class _MyHomePageState extends State<MyHomePage> {
           status: GridStatus.CONFIRM);
       if (_success()) {
         showDialog(
+            barrierDismissible: false,
             context: context,
             builder: (context) {
               return AlertDialog(
                 content: Text("恭喜您"),
                 actions: [
-                  MaterialButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text("取消"),
-                  ),
                   MaterialButton(
                     onPressed: () {
                       _generateGrids();
@@ -225,17 +218,20 @@ class _MyHomePageState extends State<MyHomePage> {
     //top
     if (rowIndex > 0) list.add(index - _columnCount);
     //top right
-    if (rowIndex > 0 && columnIndex + 1 < _columnCount) list.add(index - _columnCount + 1);
+    if (rowIndex > 0 && columnIndex + 1 < _columnCount)
+      list.add(index - _columnCount + 1);
     //left
     if (columnIndex > 0) list.add(index - 1);
     //right
     if (columnIndex + 1 < _columnCount) list.add(index + 1);
     //bottom left
-    if (rowIndex + 1 < _rowCount && columnIndex > 0) list.add(index + _columnCount - 1);
+    if (rowIndex + 1 < _rowCount && columnIndex > 0)
+      list.add(index + _columnCount - 1);
     //bottom
     if (rowIndex + 1 < _rowCount) list.add(index + _columnCount);
     //bottom right
-    if (rowIndex + 1 < _rowCount && columnIndex + 1 < _columnCount) list.add(index + _columnCount + 1);
+    if (rowIndex + 1 < _rowCount && columnIndex + 1 < _columnCount)
+      list.add(index + _columnCount + 1);
     return list;
   }
 
